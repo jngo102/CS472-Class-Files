@@ -9,7 +9,7 @@
 #define ARP_PTYPE_IPv4 0x0800 /* Internet Protocol packet */
 #define ETH_ALEN    6   /* Ethernet MAC addresses are 6 octects - 48 bytes */
 #define IP4_ALEN    4   /* Ethernet MAC addresses are 4 octets - 32 bytes */
-#define ARP_REQ_OP   1   /* From RFC - Request Op - 1 */
+#define ARP_REQ_OP   1   /* Fromgit diff RFC - Request Op - 1 */
 #define ARP_RSP_OP   2   /* From RFC - Response Op - 2 */
 
 typedef uint32_t ipaddress_t;
