@@ -23,9 +23,9 @@ static uint8_t recv_buffer[BUFF_SZ] = {0};
  *  header with a message at the end of it in the case of the
  *  command being CMD_PING_PONG.  The length in the header field
  *  indicates the total size to send to the server, thus it will
- *  be sizeof(cs472_proto_header_t) in the case that the cmd is
+ *  be sizeof(http_proto_header_t) in the case that the cmd is
  *  CMD_COURSE_INFO, or it will be 
- *  sizeof(cs472_proto_header_t) + strlen(MESSAGE) + 1 in the case
+ *  sizeof(http_proto_header_t) + strlen(MESSAGE) + 1 in the case
  *  we are doing a ping to the server.  We add the extra 1 to send
  *  over the null terminator for the string
  */
