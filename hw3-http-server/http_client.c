@@ -10,7 +10,7 @@
 #include <sys/un.h>
 #include <unistd.h>
 
-#define BUFF_SZ 1024
+#define BUFF_SZ 2048
 static char recv_buffer[BUFF_SZ];
 static int data_socket;
 char *host;
@@ -72,6 +72,7 @@ void send_and_recv_data(char *data)
     if (msg_len == -1)
     {
         perror("send");
+        close(data_socket);
         start_client();
         send_and_recv_data(data);
     }
@@ -80,11 +81,44 @@ void send_and_recv_data(char *data)
     if (msg_len == -1)
     {
         perror("recv");
+        close(data_socket);
         start_client();
         send_and_recv_data(data);
     }
 
-    printf("Response from server:\n%s\n", recv_buffer);
+    printf("Response fragment: \n%s\n", recv_buffer);
+
+    char *header = strtok(recv_buffer, "\r\n\r\n");
+    int header_len = strlen(header);
+    while (strstr(header, "Content-Length") == NULL)
+    {
+        header = strtok(NULL, "\r\n");
+    }
+
+    header = strtok(header, " ");
+    header = strtok(NULL, " ");
+    int remaining_bytes = atoi(header);
+
+    remaining_bytes -= msg_len + header_len;
+    printf("\nRemaining bytes: %d\n", remaining_bytes);
+
+    while (remaining_bytes > 0)
+    {
+        msg_len = recv(data_socket, recv_buffer, BUFF_SZ, 0);
+        if (msg_len == -1)
+        {
+            perror("recv");
+            close(data_socket);
+            start_client();
+            send_and_recv_data(data);
+        }
+        printf("\nResponse fragment: \n%s\n", recv_buffer);
+        remaining_bytes -= msg_len;
+        printf("\nRemaining bytes: %d\n", remaining_bytes);
+    }
+
+    printf("\n\n\n");
+
     memset(recv_buffer, 0, BUFF_SZ);
 }
 
@@ -96,7 +130,6 @@ int main(int argc, char **argv)
     {
         char *req = generate_header_for_request(argv[i]);
         send_and_recv_data(req);
-        sleep(1);
     }
 
     close(data_socket);
